@@ -1,6 +1,8 @@
 #ifndef BASIC_DATA_STRUCTURES_HEADER
 #define BASIC_DATA_STRUCTURES_HEADER
 
+#include <iostream>
+
 // ====================== linked list class
 template <class T>
 class LL
@@ -273,6 +275,7 @@ class coolMat{
         0 0 0 
 */
     T ** matrix;  
+    T defaultValue; 
     int height; 
     int width; 
     bool boundWrapping;
@@ -285,9 +288,21 @@ public:
     bool setVal(int row, int col, T val)
     {
 
-        bool outOfBounds = false;        
-        if (boundWrapping == false && safetyBorder == true)
+        /*
+            reference matrix
+            with coordinates 
+
+            [0,0]  [0,1]  [0,2]
+            [1,0]  [1,1]  [1,2]
+            [2,0]  [2,1]  [2,2] 
+        */
+        bool outOfBounds = false; 
+        if (safetyBorder == false && safetyBorder == false) // no border and no wrapping 
         {
+           /*
+                user has no safety
+                out of bounds returns true
+            */
             if(row > height -1 || col > width -1)
             {
                 outOfBounds = true; 
@@ -298,8 +313,17 @@ public:
             }   
 
         }
-        else if(boundWrapping == false && safetyBorder == false)
+        else if(safetyBorder == true) // safety border is on -> inherently no wrapping 
         {
+             /*
+                does not allow out of bounds
+                val will be set at closes
+                perimeter instead of going out
+                of bounds
+
+                [3,1] becomes [2,1] | [1,3] becomes [1,2]
+            */
+            
             // ------- out of bounds in + direction
             if(row > height-1) row = height - 1; 
             if (col > width-1) col = width -1; 
@@ -311,8 +335,17 @@ public:
             // --------- correctly setting
             matrix[row][col] = val; 
         }
-        else
+        else // there is bound wrapping but not border safety 
         {
+            /*
+                user wraps around when out of bounds
+
+                [3, 1] becomes [0,1]
+                [0,3] becomes [0,0]
+                [-1,2] becomes [2,2]
+                [1,-1] becomes [1,2] 
+            */
+            
             // wrap in + direction
             if(row > height-1) row = 0; 
             if (col > width -1) col = 0;
@@ -336,11 +369,21 @@ public:
 
         if( validRow == true && validCol == true)
         {
-            matrix[row][col] = T{}; 
+            matrix[row][col] = defaultValue; 
         }
     }
 
-    
+    void showMatrix()
+    {
+        for(int row = 0 ; row < height; row ++)
+        {
+            for(int col = 0; col < width ; col++)
+            {
+                std::cout<< matrix[row][col] << " ";        
+            }
+            std::cout << std::endl; 
+        }
+    }
 
     int getHeight(){ return height; }
     int getWidth(){ return width; }
@@ -351,10 +394,29 @@ public:
 
     coolMat(int height, int width, bool boundWrapping, bool safetyBorder)
     {
+        defaultValue = T{}; 
         matrix = new T*[height];
         for(int i =0; i < height; i++)
         {
             matrix [i] = new T[width](); 
+        }
+        this->boundWrapping = boundWrapping; 
+        this->safetyBorder = safetyBorder; 
+        this-> height = height; 
+        this-> width = width; 
+    }
+       coolMat(int height, int width, T defaultValue , bool boundWrapping, bool safetyBorder)
+    {
+        this->defaultValue = defaultValue;
+        matrix = new T*[height];
+        for(int i =0; i < height; i++)
+        {
+            matrix [i] = new T[width](); 
+            
+            for (int j = 0; j < width; j++)
+            {
+                matrix[i][j] = defaultValue;
+            }
         }
         this->boundWrapping = boundWrapping; 
         this->safetyBorder = safetyBorder; 
