@@ -149,7 +149,7 @@ public:
         nodeCount = 0; 
         head = nullptr; 
         tail = nullptr;
-        isCircular ? list_circularity = true : list_circularity = false;  
+        list_circularity = isCircular; 
     }
     ~LL()
     {        
