@@ -244,7 +244,7 @@ class queue
         {
             return baseList->getHeadData();
         }
-            return; 
+            return T{}; 
     }
     bool isEmpty()
     {
