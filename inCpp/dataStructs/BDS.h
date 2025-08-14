@@ -296,22 +296,21 @@ public:
             [1,0]  [1,1]  [1,2]
             [2,0]  [2,1]  [2,2] 
         */
-        bool outOfBounds = false; 
         if (safetyBorder == false && safetyBorder == false) // no border and no wrapping 
         {
            /*
                 user has no safety
                 out of bounds returns true
             */
-            if(row > height -1 || col > width -1)
+            if(outOfBoundsCheck(row, col) == true)
             {
-                outOfBounds = true; 
+                return true; 
             }
             else
             {
                 matrix[row][col] = val; 
+                return false; 
             }   
-
         }
         else if(safetyBorder == true) // safety border is on -> inherently no wrapping 
         {
@@ -334,6 +333,7 @@ public:
             
             // --------- correctly setting
             matrix[row][col] = val; 
+            return false; 
         }
         else // there is bound wrapping but not border safety 
         {
@@ -355,8 +355,8 @@ public:
             if(col < 0) col = width -1; 
 
             matrix [row][col] = val; 
+            return false; 
         }
-        return outOfBounds; 
     }
 
     void resetVal(int row, int col)
@@ -390,7 +390,37 @@ public:
     bool isBoundWrapping(){ return boundWrapping; }
     bool isSafetyBorder(){ return safetyBorder; }
     void setBoundWrapping(bool valSetter) { boundWrapping = valSetter; }
-    void setSafetyBorder(bool valSetter) { safetyBorder = valSetter; }
+    void setSafetyBorder(bool valSetter) { safetyBorder = valSetter; }    
+    bool searchFor(T targetData)
+    {
+        for(int row = 0; row < height; row++)
+        {
+            for(int col =0; col < width; col++)
+            {
+                if(matrix[row][col] == targetData){return true;}
+            }
+        }
+        return false; 
+    }
+    bool outOfBoundsCheck(int row, int col)
+    {
+        // out of bounds in + direction 
+        if(row > height -1 || col > width -1)
+        {return true;}
+        // out of bounds in - direction
+        else if( row < 0 || col < 0)
+        { return true; }
+        // not out of bounds | within [0, n-1]
+        else
+        { return false; }
+    }
+    T getPosData(int row, int col)
+    {
+        if(row > height || row < 0){row = 0;}
+        if (col > width || col < 0){col = 0;}
+        return matrix[row][col];
+    }
+
 
     coolMat(int height, int width, bool boundWrapping, bool safetyBorder)
     {

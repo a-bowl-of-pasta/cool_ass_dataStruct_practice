@@ -1,9 +1,12 @@
 
 #include "../dataStructs/BDS.h"
 #include <conio.h>
+#include <math.h>
 
-struct snakeObj
+
+class snakeObj
 {
+    // ================ position struct
     struct position
     {
         int row; 
@@ -16,7 +19,51 @@ struct snakeObj
         }
     };
     LL<position> snakeBody;  
+    bool ateFood; 
+    
+    public:
+    // ================================================= snake movement 
+    bool moveSnake(int row, int col, coolMat<char>& map)
+    {  
+        if(map.getPosData(row, col) == 'Q') //add node, don't remove tail
+        {
+            snakeBody.add_node(position(row, col)); 
+            map.resetVal(row,col); 
+            map.setVal(row, col, 'o'); 
+            ateFood = true; 
+            return false; 
+        }
+        else if(map.getPosData(row, col) == 'o') // don't add node, replace head with X
+        {
+            map.resetVal(snakeBody.getTailData().row, snakeBody.getTailData().col); 
+            map.setVal(snakeBody.getTailData().row, snakeBody.getTailData().col, 'x');
+            return true; 
+        }
+        else // normal movement
+        {
+            if(map.outOfBoundsCheck(row, col) == true) // out of bounds
+            {
+                map.resetVal(snakeBody.getTailData().row,snakeBody.getTailData().col);           
+                map.setVal(snakeBody.getTailData().row, snakeBody.getTailData().col, 'x');
+                return true; 
+            }
+            else // not out of bounds
+            {
+                map.setVal(row, col, 'o');
+                snakeBody.add_node(position(row, col)); 
+                
+                // movement animation
+                if(snakeBody.getSize() > 1)
+                {
+                    map.resetVal(snakeBody.getHeadData().row, snakeBody.getHeadData().col);
+                    snakeBody.removeHead();                 
+                }
+                return false; 
+            }
+        } 
+    }
 
+    // ============================================================ player movement driver
     bool makeMove(int rowOffset, int colOffset, coolMat<char>& map)
     {
         /*
@@ -29,40 +76,18 @@ struct snakeObj
         */
 
         int row = snakeBody.getTailData().row + rowOffset; 
-        int col = snakeBody.getTailData().col + colOffset;
-        return  addToSnake(row, col, map);
-    }
-    bool addToSnake(int row, int col, coolMat<char>& map)
-    {  
-        // mark on map
-        bool isOutOfBounds = map.setVal(row, col, 'o');
-        
-        if(isOutOfBounds == false) // remove tail (character movement logic)
-        {
-            // new head position
-            snakeBody.add_node(position(row, col));
-            
-            // remove head (character movement animation)
-            if(snakeBody.getSize() > 1 )
-            {
-                map.resetVal(snakeBody.getHeadData().row, snakeBody.getHeadData().col);
-                snakeBody.removeHead(); 
-            }
-        }
-        else // if out of bounds replace current 'o' with 'x' 
-        {
-            map.resetVal(snakeBody.getTailData().row,snakeBody.getTailData().col);           
-            map.setVal(snakeBody.getTailData().row, snakeBody.getTailData().col, 'x');
-        }
-        
-        return isOutOfBounds; 
+        int col = snakeBody.getTailData().col + colOffset; 
+        return moveSnake(row, col, map); 
     }
 
+    bool snakeAteFood(){return ateFood; }
+    void makeSnakeHungry(){ateFood = false; }
+    //============================================ constructor
     snakeObj(int row, int col, coolMat<char>& map): snakeBody(false)
     {
-        addToSnake(row, col, map); 
+        moveSnake(row, col, map);  
+        ateFood = false; 
     }
-
 };
 
 
@@ -86,19 +111,32 @@ Q = food
 */
 // ================= game logic
 
+void setFood(coolMat<char>& map)
+{
+
+    int height = map.getHeight(); 
+    int width = map.getWidth(); 
+
+    int row;
+    int col; 
+    do{
+        row = rand() % height;
+        col = rand() % width;
+    }while(map.getPosData(row, col) != '*');
+    
+    map.setVal(row, col, 'Q'); 
+
+}
+
 bool moveLogic(int rowOffset, int colOffset, coolMat<char>& map, snakeObj& snake)
 {
     bool gameOver = snake.makeMove(rowOffset, colOffset, map);
-   
 
-   
         system("cls");
         map.showMatrix(); 
-    
    
     return gameOver; 
 }
-
 // ================= build the game
 coolMat<char> buildMap(int width_and_height)
 {
@@ -112,7 +150,6 @@ snakeObj initializeCharacter(coolMat<char>& map)
     int col = (map.getHeight() - 1 )/ 2; 
     
     snakeObj snake(row, col, map);
-    map.showMatrix(); 
 
     return snake; 
 }
@@ -121,6 +158,7 @@ void runGame (coolMat<char>& map, snakeObj& snake)
 {
 
     bool gameOver = false; 
+    map.showMatrix(); 
     while(gameOver == false)
     {
         int key_press = 0;
@@ -150,7 +188,12 @@ void runGame (coolMat<char>& map, snakeObj& snake)
             default:
             break; 
         }
-
+        // snake ate food, so reset food and snake's hunger
+        if(snake.snakeAteFood() == true) 
+        { 
+            setFood(map); 
+            snake.makeSnakeHungry(); 
+        }
     } 
     
     std::cout << "\n\nGame Over" << std::endl; 
@@ -159,20 +202,20 @@ void runGame (coolMat<char>& map, snakeObj& snake)
 void playSnake()
 {
 
+    srand(time(0));
     coolMat<char> map = buildMap(7);
     snakeObj snake = initializeCharacter(map); 
+    setFood(map); 
     runGame(map, snake); 
 
 }
 
 
 /*
-
-[ ] load environment : starting body, map, food gen
-[ ] snake movement 
+[X] load environment : starting body, map, food gen
+[X] snake movement 
 [ ] eat food, grow body (matrix cell = 1) | same size if not
 [ ] game over if eat own body (matrix cell = 2)
-[ ] game over if out of bounds 
-[ ] 
-
+[X] game over if out of bounds 
+[ ] impliment AI 
 */
