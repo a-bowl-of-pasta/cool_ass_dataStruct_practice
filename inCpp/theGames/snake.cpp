@@ -214,8 +214,8 @@ void playSnake()
 /*
 [X] load environment : starting body, map, food gen
 [X] snake movement 
-[ ] eat food, grow body (matrix cell = 1) | same size if not
-[ ] game over if eat own body (matrix cell = 2)
+[X] eat food, grow body (matrix cell = 1) | same size if not
+[X] game over if eat own body (matrix cell = 2)
 [X] game over if out of bounds 
-[ ] impliment AI 
+[ ] implement AI 
 */

@@ -1,5 +1,8 @@
 #include <iostream>
 #include "theGames/snake.cpp"
+#include "theGames/eightPuzzleSolver.cpp"
+#include "theGames/gridWorld.cpp"
+
 int main()
 {
     std::cout << "this is a menue to test out the various data structures and some of their algorithms" <<std::endl; 
@@ -20,7 +23,7 @@ int main()
     }
     else if(choice == 2)
     {
-
+        play_eight_puzzle(); 
     }
     else if(choice == 3)
     {
