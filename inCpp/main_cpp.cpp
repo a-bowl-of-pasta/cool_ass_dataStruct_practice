@@ -6,7 +6,7 @@
 int main()
 {
     std::cout << "this is a menue to test out the various data structures and some of their algorithms" <<std::endl; 
-    std::cout << "0.) endGame \n1.) snake\n2.) AI sliding puzzle solver\n3.) AI map directions\n4.) interactive grid world"<<std::endl; 
+    std::cout << "\n1.) snake\n2.) AI sliding puzzle solver\n3.) AI map directions\n4.) interactive grid world\n0) End Game"<<std::endl; 
     
     int choice; 
 

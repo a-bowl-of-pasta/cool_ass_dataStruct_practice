@@ -181,7 +181,7 @@ void runGame (coolMat<char>& map, snakeObj& snake)
             gameOver = moveLogic(0,1,map, snake); 
             break;
             
-            case 107:
+            case 107: // k = kill game
             gameOver = true; 
             break; 
 
