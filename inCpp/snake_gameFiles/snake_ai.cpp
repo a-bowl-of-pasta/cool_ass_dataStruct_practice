@@ -9,18 +9,7 @@ int mapDimensions = 0;
 // ================= init game
 void set_data_matrix(coolMat<metaData>& dataMap)
 {
-    for(int row = 0; row < mapDimensions; row++)
-    {
-        for(int col = 0; col < mapDimensions; col++)
-        {
-            // everything that is not the 
-            // snake head or body is set to empty
-            if(dataMap.getPosData(row, col).stored_in_cell != 1 && dataMap.getPosData(row, col).stored_in_cell != 2)
-            {
-             dataMap.setVal(row, col, metaData(row, col, false, 0));    
-            }
-        }
-    }
+    // !!!!!!!!!!!!!!!!!!!!!!!!! write this function 
 }
 //
 //
@@ -36,7 +25,11 @@ coolMat<char> buildMap()
 coolMat<metaData> parallelData()
 {
     coolMat<metaData> metDat(mapDimensions, mapDimensions, metaData(), false, false); 
+    
+    // !!!!!!!!!!!!!!!!!!!!!! check to see it works
     set_data_matrix(metDat); 
+    // !!!!!!!!!!!!!!!!!!!!!!!
+    
     return metDat; 
 }
 //
@@ -50,7 +43,9 @@ snakeObj initializeCharacter(coolMat<char>& map, coolMat<metaData>& dataMap)
 
     snakeObj snake(row, col, map);
 
+    // !!!!!!!!!!!!!!!!!!!!!! make sure this is right
     dataMap.setVal(row, col, metaData(row, col, true, 1));
+    // !!!!!!!!!!!!!!!!!!!!! 
 
     return snake; 
 }
@@ -69,7 +64,10 @@ void setFood(coolMat<char>& map, coolMat<metaData>& mapData)
         col = rand() % width;
     }while(map.getPosData(row, col) != '*');
     
+    // !!!!!!!!!!!!!!!!!!!!!!! make sure this is right
     mapData.setVal(row, col, metaData(row, col, false, 2)); 
+    // !!!!!!!!!!!!!!!!!!!!!!!
+    
     map.setVal(row, col, 'Q'); 
 
 }
@@ -78,6 +76,13 @@ void setFood(coolMat<char>& map, coolMat<metaData>& mapData)
 //
 bool moveLogic(int rowOffset, int colOffset, coolMat<char>& map, snakeObj& snake)
 {
+
+
+    // !!!!!!!!!!!! make sure that you rewrite the  
+    // !!!!!!!!!!!! AI's movement logic, should differ
+    // !!!!!!!!!!!! from the player movement logic
+
+
     bool gameOver = snake.makeMove(rowOffset, colOffset, map);
 
         system("cls");
@@ -89,6 +94,10 @@ bool moveLogic(int rowOffset, int colOffset, coolMat<char>& map, snakeObj& snake
 // =================== run the game
 void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
 {
+
+    // !!!!!!!!!!!!!!! double check that this is correct
+    // !!!!!!!!!!!!!!! it's just running the game, so it
+    // !!!!!!!!!!!!!!! likely just needs some tweaks
 
     bool gameOver = false; 
     map.showMatrix(); 
@@ -124,9 +133,9 @@ void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
         // snake ate food, so reset food and snake's hunger
         if(snake.snakeAteFood() == true) 
         { 
-            // ---------------------------------------------------------------------------------!!!!!!!!!!!
+            // !!!!!!!!!!!!!!!! make sure this works
             setFood(map, md); 
-            // ---------------------------------------------------------------------------------!!!!!!!!!!!
+            // !!!!!!!!!!!!!!!!
 
             snake.makeSnakeHungry(); 
         }
@@ -139,32 +148,12 @@ void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
 //
 //
 //
-void playSnake(int mapSize)
-{
-    mapDimensions = mapSize; 
-    srand(time(0));
-
-    coolMat<char> map = buildMap();
-    coolMat<metaData> mapData = parallelData(); 
-    snakeObj snake = initializeCharacter(map, mapData); 
-    
-    //mapData.showMatrix(); 
-
-    std::cout << std::endl<< std::endl; 
-
-    map.showMatrix(); 
-    
-    
-    //setFood(map, mapData); 
-    //runGame(map, mapData, snake); 
-}
-//
-//
-//
 } // namespace SNAKE_AI
 
 void playSnake_AI(int mapSize)
 {
+
+    // !!!!!!!!!!! make sure this whole cluster works as intended
     system("cls");
     SNAKE_AI::mapDimensions = mapSize; 
     srand(time(0));
@@ -172,13 +161,20 @@ void playSnake_AI(int mapSize)
     coolMat<char> map = SNAKE_AI::buildMap();
     coolMat<metaData> mapData = SNAKE_AI::parallelData(); 
     snakeObj snake = SNAKE_AI::initializeCharacter(map, mapData); 
+    // !!!!!!!!!!!!!
+
+
     
-    //mapData.showMatrix(); 
+    // ----------------- !!!!!!!!!!!!!!!!!!!!!!!!! make sure all this shows the right output 
+
+    // !!!!!!!!!!!!!!!!!! write a 'print' function for metaData
+    mapData.showMatrix(); 
+    // !!!!!!!!!!!!!!!!!!
 
     std::cout << std::endl<< std::endl; 
 
     map.showMatrix(); 
-    
+    // ------------------ !!!!!!!!!!!!!!!!!!!!!!!     
     
     //setFood(map, mapData); 
     //runGame(map, mapData, snake); 

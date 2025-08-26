@@ -4,6 +4,12 @@
 
 namespace BASE_SNAKE {
     
+    //!!!!!!!!!!!!!!
+    // FIX NOW :: error in out of bounds going down
+    // when player goes out of bounds in the 
+    // south direction. it crashes. 
+    // load game, go out of bounds heading south, you'll see what I mean
+    //!!!!!!!!!!!!!!
 
 void setFood(coolMat<char>& map)
 {
@@ -28,8 +34,9 @@ bool moveLogic(int rowOffset, int colOffset, coolMat<char>& map, snakeObj& snake
 
         system("cls");
         map.showMatrix(); 
-   
+
     return gameOver; 
+
 }
 // ================= build the game
 coolMat<char> buildMap(int width_and_height)
@@ -116,5 +123,4 @@ void playSnake(int mapSize)
 [X] eat food, grow body (matrix cell = 1) | same size if not
 [X] game over if eat own body (matrix cell = 2)
 [X] game over if out of bounds 
-[ ] implement AI 
 */

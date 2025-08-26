@@ -52,6 +52,13 @@ class snakeObj
     // ================================================= snake movement 
     bool moveSnake(int row, int col, coolMat<char>& map)
     {  
+        
+        if(map.outOfBoundsCheck(row, col) == true) // if out of bounds
+        { 
+            map.resetVal(snakeBody.getTailData().row,snakeBody.getTailData().col);           
+            map.setVal(snakeBody.getTailData().row, snakeBody.getTailData().col, 'x');
+            return true; 
+        }
         if(map.getPosData(row, col) == 'Q') //add node, don't remove tail
         {
             snakeBody.add_node(position(row, col)); 
@@ -66,16 +73,8 @@ class snakeObj
             map.setVal(snakeBody.getTailData().row, snakeBody.getTailData().col, 'x');
             return true; 
         }
-        else // normal movement
+        else // normal movement, not out of bounds
         {
-            if(map.outOfBoundsCheck(row, col) == true) // out of bounds
-            {
-                map.resetVal(snakeBody.getTailData().row,snakeBody.getTailData().col);           
-                map.setVal(snakeBody.getTailData().row, snakeBody.getTailData().col, 'x');
-                return true; 
-            }
-            else // not out of bounds
-            {
                 map.setVal(row, col, 'o');
                 snakeBody.add_node(position(row, col)); 
                 
@@ -85,8 +84,8 @@ class snakeObj
                     map.resetVal(snakeBody.getHeadData().row, snakeBody.getHeadData().col);
                     snakeBody.removeHead();                 
                 }
-                return false; 
-            }
+               return false; 
+            
         } 
     }
 
