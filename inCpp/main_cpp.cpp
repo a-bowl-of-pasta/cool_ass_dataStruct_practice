@@ -1,7 +1,10 @@
 #include <iostream>
-#include "theGames/snake.cpp"
-#include "theGames/eightPuzzleSolver.cpp"
-#include "theGames/gridWorld.cpp"
+
+#include "snake_gameFiles/snake.cpp"
+#include "snake_gameFiles/snake_ai.cpp"
+
+#include "slidingEight_gameFiles/eightPuzzleSolver.cpp"
+#include "gridWorld_gameFiles/gridWorld.cpp"
 
 int main()
 {
@@ -18,7 +21,18 @@ int main()
 
         if(choice == 1)
         {
-            playSnake(); 
+            char opt; 
+            std::cout << "watch AI :: Y / N\nenter your choice :: ";
+            std::cin >> opt; 
+
+            if(opt == 'y' || opt == 'Y')
+            {
+                playSnake_AI(11); 
+            }
+            else
+            {
+                playSnake(7); 
+            }
         }
         else if(choice == 2)
         {

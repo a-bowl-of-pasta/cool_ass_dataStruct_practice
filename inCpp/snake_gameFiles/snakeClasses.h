@@ -1,9 +1,36 @@
+#ifndef HELPER_SNAKE_CLASSES
+#define HELPER_SNAKE_CLASSES
 
 #include "../dataStructs/BDS.h"
-#include <conio.h>
-#include <math.h>
+struct metaData
+{
+    /*
+        stored_in_cell - the thing the cell stores :: 
+        0 = empty space
+        1 = snake head
+        2 = snake body 
+        3 = food
+    */
+    int row; 
+    int col; 
+    int stored_in_cell;
+    bool known; 
 
-
+    metaData(int y, int x, bool isKnown, int inCell)
+    {
+        row = y; 
+        col = x; 
+        known = isKnown; 
+        stored_in_cell = inCell;
+    } 
+    metaData()
+    {
+        row = 0; 
+        col = 0; 
+        known = false; 
+        stored_in_cell = 0;     
+    }
+};
 class snakeObj
 {
     // ================ position struct
@@ -91,131 +118,5 @@ class snakeObj
 };
 
 
-/*
-7 x 7  map
 
-* = movable space
-
-o = snake body
-X = snake hit itself 
-
-Q = food 
-
-0 0 0 0 0 0 0
-0 Q 0 0 0 0 0 
-0 0 0 0 0 0 0
-0 0 0 o 0 0 0
-0 0 0 0 0 0 0
-0 0 0 0 0 0 0
-0 0 0 0 0 0 0
-*/
-// ================= game logic
-
-void setFood(coolMat<char>& map)
-{
-
-    int height = map.getHeight(); 
-    int width = map.getWidth(); 
-
-    int row;
-    int col; 
-    do{
-        row = rand() % height;
-        col = rand() % width;
-    }while(map.getPosData(row, col) != '*');
-    
-    map.setVal(row, col, 'Q'); 
-
-}
-
-bool moveLogic(int rowOffset, int colOffset, coolMat<char>& map, snakeObj& snake)
-{
-    bool gameOver = snake.makeMove(rowOffset, colOffset, map);
-
-        system("cls");
-        map.showMatrix(); 
-   
-    return gameOver; 
-}
-// ================= build the game
-coolMat<char> buildMap(int width_and_height)
-{
-    coolMat<char> map(width_and_height,width_and_height, '*', false, false); 
-    return map; 
-}
-snakeObj initializeCharacter(coolMat<char>& map)
-{
-
-    int row = (map.getHeight() - 1) / 2; 
-    int col = (map.getHeight() - 1 )/ 2; 
-    
-    snakeObj snake(row, col, map);
-
-    return snake; 
-}
-// =================== run the game
-void runGame (coolMat<char>& map, snakeObj& snake)
-{
-
-    bool gameOver = false; 
-    map.showMatrix(); 
-    while(gameOver == false)
-    {
-        int key_press = 0;
-        
-        switch((key_press=getch()))
-        {
-            case 72: // up key
-            gameOver = moveLogic(-1,0,map, snake); 
-            break;
-            
-            case 80: // down key
-            gameOver = moveLogic(1,0,map, snake);
-            break;
-            
-            case 75: // left key
-            gameOver = moveLogic(0,-1,map, snake); 
-            break;
-            
-            case 77: // right key
-            gameOver = moveLogic(0,1,map, snake); 
-            break;
-            
-            case 107: // k = kill game
-            gameOver = true; 
-            break; 
-
-            default:
-            break; 
-        }
-        // snake ate food, so reset food and snake's hunger
-        if(snake.snakeAteFood() == true) 
-        { 
-            setFood(map); 
-            snake.makeSnakeHungry(); 
-        }
-    } 
-    
-    std::cout << "\n\nGame Over" << std::endl; 
-
-}
-void playSnake()
-{
-
-    srand(time(0));
-    coolMat<char> map = buildMap(7);
-    snakeObj snake = initializeCharacter(map); 
-    setFood(map); 
-    runGame(map, snake); 
-
-}
-
-
-/*
-[X] load environment : starting body, map, food gen
-[X] snake movement 
-[X] eat food, grow body (matrix cell = 1) | same size if not
-[X] game over if eat own body (matrix cell = 2)
-[X] game over if out of bounds 
-[ ] implement AI 
-*/
+#endif
