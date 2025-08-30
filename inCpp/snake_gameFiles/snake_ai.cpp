@@ -7,16 +7,30 @@ namespace SNAKE_AI {
 int mapDimensions = 0; 
 
 // ================= init game
-void set_data_matrix(coolMat<metaData>& dataMap)
+void set_data_matrix(coolMat<metaData>& dataMap, coolMat<char>& map)
 {
-    // !!!!!!!!!!!!!!!!!!!!!!!!! write this function 
+    // this sets the matrix to the default state
+    for(int row =0; row < mapDimensions; row++)
+    {
+        for(int col = 0; col < mapDimensions; col ++ )
+        {
+            if(map.getPosData(row, col) == 'o')
+            {
+                dataMap.setVal(row, col, metaData(row, col, true, 1)); 
+            }
+            else
+            {
+                dataMap.setVal(row, col, metaData(row, col, false, 0));
+            }
+        }
+    }
 }
 //
 //
 //
 coolMat<char> buildMap()
 {
-    coolMat<char> map(mapDimensions, '*', false, false); 
+    coolMat<char> map(mapDimensions,mapDimensions,  '*', false, false); 
     return map; 
 }
 //
@@ -25,11 +39,6 @@ coolMat<char> buildMap()
 coolMat<metaData> parallelData()
 {
     coolMat<metaData> metDat(mapDimensions, mapDimensions, metaData(), false, false); 
-    
-    // !!!!!!!!!!!!!!!!!!!!!! check to see it works
-    set_data_matrix(metDat); 
-    // !!!!!!!!!!!!!!!!!!!!!!!
-    
     return metDat; 
 }
 //
@@ -42,11 +51,7 @@ snakeObj initializeCharacter(coolMat<char>& map, coolMat<metaData>& dataMap)
     int col = (map.getHeight() - 1 )/ 2; 
 
     snakeObj snake(row, col, map);
-
-    // !!!!!!!!!!!!!!!!!!!!!! make sure this is right
     dataMap.setVal(row, col, metaData(row, col, true, 1));
-    // !!!!!!!!!!!!!!!!!!!!! 
-
     return snake; 
 }
 // ================= game logic
@@ -64,12 +69,110 @@ void setFood(coolMat<char>& map, coolMat<metaData>& mapData)
         col = rand() % width;
     }while(map.getPosData(row, col) != '*');
     
-    // !!!!!!!!!!!!!!!!!!!!!!! make sure this is right
-    mapData.setVal(row, col, metaData(row, col, false, 2)); 
-    // !!!!!!!!!!!!!!!!!!!!!!!
-    
     map.setVal(row, col, 'Q'); 
 
+}
+//
+//
+//
+void visualize_dataMatrix(coolMat<metaData>& md)
+{
+    for(int row =0; row < mapDimensions; row++)
+    {
+        for(int col =0; col < mapDimensions; col ++)
+        {
+            metaData var = md.getPosData(row, col) ;
+            if(var.stored_in_cell == 0)
+            {
+                if(var.known == true) { std::cout << "~ "; }
+                else { std::cout << "X ";}
+            }
+            else if(var.stored_in_cell == 1)
+            {
+                std::cout << "o "; 
+            }
+            else if(var.stored_in_cell == 2)
+            {
+                std::cout << "Q "; 
+            }
+        }
+        std::cout << std::endl; 
+    }
+}
+//
+//
+//
+void printDataMatrix(coolMat<metaData>& md)
+{
+    for(int row = 0; row < mapDimensions; row++)
+    {
+        for(int col =0; col < mapDimensions; col++)
+        {
+            md.getPosData(row, col).dataDisplay();      
+               std::cout << std::endl; 
+
+        }
+    }
+}
+//
+//
+//
+void snakeVis(snakeObj& snakeRef, coolMat<metaData>& md, coolMat<char>& map)
+{
+    
+    int headRow = snakeRef.getSnakeHead().row; 
+    int headCol = snakeRef.getSnakeHead().col; 
+    
+    bool complete = false; 
+
+    int rowPos =0; 
+    int colPos =0;
+    while(!complete)
+    {
+        // look at row
+        if(colPos < mapDimensions)
+        {
+            // mark when food or snake body is found
+            if(map.getPosData(headRow, colPos) == 'Q' )
+            {
+               md.setVal(headRow, colPos, metaData(headRow, colPos, true, 2)); 
+            }
+            else if(map.getPosData(headRow, colPos) == 'o')
+            {
+                md.setVal(headRow, colPos, metaData(headRow, colPos, true, 1)); 
+
+            }
+            else
+            {
+               md.setVal(headRow, colPos, metaData(headRow, colPos, true, 0)); 
+            }
+        }       
+        // look at col
+        if(rowPos < mapDimensions)
+        {
+            // mark when food or snake body is found
+            if(map.getPosData(rowPos, headCol) == 'Q' )
+            {
+               md.setVal(rowPos, headCol, metaData(rowPos, headCol, true, 2)); 
+
+            }
+            else if(map.getPosData(rowPos, headCol) == 'o')
+            {
+               md.setVal(rowPos, headCol, metaData(rowPos, headCol, true, 1)); 
+
+            }
+            else
+            {
+                md.setVal(rowPos, headCol, metaData(rowPos, headCol, true, 0)); 
+               
+            }
+        }
+        colPos++; 
+        rowPos++; 
+        
+        if(rowPos >= mapDimensions && colPos >= mapDimensions){complete = true;}
+    }
+    visualize_dataMatrix(md);
 }
 //
 //
@@ -90,17 +193,17 @@ bool moveLogic(int rowOffset, int colOffset, coolMat<char>& map, snakeObj& snake
    
     return gameOver; 
 }
-
 // =================== run the game
 void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
 {
 
-    // !!!!!!!!!!!!!!! double check that this is correct
-    // !!!!!!!!!!!!!!! it's just running the game, so it
-    // !!!!!!!!!!!!!!! likely just needs some tweaks
-
     bool gameOver = false; 
+
+    // initial board display
     map.showMatrix(); 
+    std::cout<<std::endl; 
+    snakeVis(snake, md, map); 
+
     while(gameOver == false)
     {
         int key_press = 0;
@@ -108,19 +211,27 @@ void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
         switch((key_press=getch()))
         {
             case 72: // up key
-            gameOver = moveLogic(-1,0,map, snake); 
+            gameOver = moveLogic(-1,0,map, snake); // move snake
+            std::cout<<std::endl; 
+            snakeVis(snake, md, map); // update meta data
             break;
             
             case 80: // down key
             gameOver = moveLogic(1,0,map, snake);
+            std::cout<<std::endl; 
+            snakeVis(snake, md, map); 
             break;
             
             case 75: // left key
             gameOver = moveLogic(0,-1,map, snake); 
+            std::cout<<std::endl; 
+            snakeVis(snake, md, map); 
             break;
             
             case 77: // right key
             gameOver = moveLogic(0,1,map, snake); 
+            std::cout<<std::endl; 
+            snakeVis(snake, md, map); 
             break;
             
             case 107: // k = kill game
@@ -130,14 +241,15 @@ void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
             default:
             break; 
         }
-        // snake ate food, so reset food and snake's hunger
+        // if food found : 
+        // food is reset
+        // snake's boolean 'has eaten' value is reset to false 
+        // meta_data array is reset | new food location is unknown 
         if(snake.snakeAteFood() == true) 
         { 
-            // !!!!!!!!!!!!!!!! make sure this works
             setFood(map, md); 
-            // !!!!!!!!!!!!!!!!
-
             snake.makeSnakeHungry(); 
+            set_data_matrix(md, map); 
         }
     } 
     
@@ -152,32 +264,20 @@ void runGame (coolMat<char>& map, coolMat<metaData>& md, snakeObj& snake)
 
 void playSnake_AI(int mapSize)
 {
-
-    // !!!!!!!!!!! make sure this whole cluster works as intended
+    //  game setup 
     system("cls");
     SNAKE_AI::mapDimensions = mapSize; 
     srand(time(0));
 
-    coolMat<char> map = SNAKE_AI::buildMap();
+    //  map & metaData setup
+    coolMat<char> map = SNAKE_AI::buildMap(); 
     coolMat<metaData> mapData = SNAKE_AI::parallelData(); 
+    SNAKE_AI::set_data_matrix(mapData, map); 
     snakeObj snake = SNAKE_AI::initializeCharacter(map, mapData); 
-    // !!!!!!!!!!!!!
 
-
-    
-    // ----------------- !!!!!!!!!!!!!!!!!!!!!!!!! make sure all this shows the right output 
-
-    // !!!!!!!!!!!!!!!!!! write a 'print' function for metaData
-    mapData.showMatrix(); 
-    // !!!!!!!!!!!!!!!!!!
-
-    std::cout << std::endl<< std::endl; 
-
-    map.showMatrix(); 
-    // ------------------ !!!!!!!!!!!!!!!!!!!!!!!     
-    
-    //setFood(map, mapData); 
-    //runGame(map, mapData, snake); 
+    //  run game
+    SNAKE_AI::setFood(map, mapData);
+    SNAKE_AI::runGame(map, mapData, snake); 
 }
 
 /*
@@ -191,15 +291,14 @@ Base Game ::
 
 implement AI :: 
 
-[] build parallel metaData matrix
-[] write a metaData reset - used when initializing map & when food is eaten
-[] update metaData when food is placed
-[] update metaData when food is eaten
-[] update metaData when snake moves - old tail slot = empty when snake moves
-[] give the snake vision - snake can see an 8 x 8 square, with its head being the center
+[X] build parallel metaData matrix
+[X] write a metaData reset - used when initializing map & when food is eaten
+[X] update metaData when food is placed
+[X] update metaData when food is eaten
+[X] give the snake vision - snake can see an 8 x 8 square, with its head being the center
 [] write heuristic
 [] write A* search
-[] explore until food is found then path with A*
+[] AI movement | no keyboards used anymore
 */
 
 /*
@@ -208,15 +307,15 @@ o = snake body
 * = empty spaces
 Q = food
 
-* * * * * * * * * * * * * *  
-* * * * * * * * v v v v v v
-* * * * * * o o o v v v v v 
-* * * * * * o * v v v v Q v 
-* * * * o o o * * * * * * * 
-* * * * o * * * * * * * * * 
-* * * * o * * * * * * * * * 
-* * * * o * * * * * * * * * 
-* * * * * * * * * * * * * * 
+* * * * * * * * v * * * * *  
+* * * * * * * * v * * * * * 
+v v v v v v o o o v v v v v 
+* * * * * * o * v * * * * *
+* Q * * o o o * v * * * * * 
+* * * * o * * * v * * * * * 
+* * * * o * * * v * * * * * 
+* * * * o * * * v * * * * * 
+* * * * * * * * v * * * * * 
 
 the food is within the snake's line
 of sight, so the food is known.

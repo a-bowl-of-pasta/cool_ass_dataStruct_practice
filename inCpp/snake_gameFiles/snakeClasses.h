@@ -16,6 +16,10 @@ struct metaData
     int stored_in_cell;
     bool known; 
 
+    void dataDisplay()
+    {
+        std::cout << "row: " << row << " col: " << col << " storedType: " << stored_in_cell << " isKnown: " << known; 
+    }
     metaData(int y, int x, bool isKnown, int inCell)
     {
         row = y; 
@@ -108,6 +112,7 @@ class snakeObj
 
     bool snakeAteFood(){return ateFood; }
     void makeSnakeHungry(){ateFood = false; }
+    position getSnakeHead(){return snakeBody.getTailData(); }
     //============================================ constructor
     snakeObj(int row, int col, coolMat<char>& map): snakeBody(false)
     {

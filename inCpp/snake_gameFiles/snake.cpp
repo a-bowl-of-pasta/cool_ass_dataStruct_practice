@@ -4,13 +4,6 @@
 
 namespace BASE_SNAKE {
     
-    //!!!!!!!!!!!!!!
-    // FIX NOW :: error in out of bounds going down
-    // when player goes out of bounds in the 
-    // south direction. it crashes. 
-    // load game, go out of bounds heading south, you'll see what I mean
-    //!!!!!!!!!!!!!!
-
 void setFood(coolMat<char>& map)
 {
 

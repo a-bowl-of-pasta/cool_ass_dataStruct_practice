@@ -27,7 +27,7 @@ int main()
 
             if(opt == 'y' || opt == 'Y')
             {
-                //playSnake_AI(11); 
+                playSnake_AI(15); 
             }
             else
             {
